@@ -48,6 +48,7 @@ int main(int argc, char *argv[]){
     for (j=0; j<steps; j++){
       
       state = cromer(state, dt, omega2);
+
       e = energy(state, omega2);
 
       fprintf(output, "\t\t%.10lf\t %.10lf\t %.10lf\t %.10lf\n", dt*(j+1), state.x, state.v, e/e0 - 1.);
@@ -85,8 +86,6 @@ struct vector cromer(struct vector old, double dt, double omega2){    //Eulero-C
   
   new.v = old.v - omega2 * old.x * dt;
   new.x = old.x + new.v * dt;
-
-  printf("%.10lf\n", new.x);
 
   return new;
   

@@ -3,7 +3,7 @@
 #include <math.h>
 
 //RODARI RIVA
-//28 settembre 2017   -   v.1.0.1
+//28 settembre 2017   -   v.1.0.2
 
 struct vector{
   double x;
@@ -19,7 +19,7 @@ int main(int argc, char *argv[]){
   // DICHIARAZIONE VARIABILI
   
   long int steps;
-  int i, j, k;
+  int i, j;
   double omega2, dt, tmax, e, e0;
   struct vector state;
   
@@ -28,9 +28,6 @@ int main(int argc, char *argv[]){
   FILE *input;
   FILE *output;
 
-  sprintf(filename, "Kappa123");
-  puts(filename);
-
   input = fopen("input.dat", "r");
 
   for(i=0;i<2;i++){ // i < numero di righe di stati iniziali
@@ -38,12 +35,25 @@ int main(int argc, char *argv[]){
     fscanf(input, "%lf %lf %lf %lf %lf", &state.x, &state.v, &omega2, &dt, &tmax);
 
     steps = (long int)tmax/dt;
+    e0 = energy(state, omega2);
 
     printf("%.10lf %.10lf %.10lf %.10lf %.10lf %ld\n", state.x, state.v, omega2, dt, tmax, steps);
 
-    sprintf(filename, "output%.0lf.dat", state.x);
-
+    sprintf(filename, "cromer%d.dat", i); // Da' un nome al file di output e lo apre in scrittura
     output = fopen(filename, "w");
+
+    fprintf(output, "# Structure: t,\t x_calc,\t v_calc,\t E(t)/E0 - 1\n");
+    fprintf(output, "\t\t%.10lf\t %.10lf\t %.10lf\t %.10lf\n", 0., state.x, state.v, 0.);
+    
+    for (j=0; j<steps; j++){
+      
+      state = cromer(state, dt, omega2);
+      e = energy(state, omega2);
+
+      fprintf(output, "\t\t%.10lf\t %.10lf\t %.10lf\t %.10lf\n", dt*(i+1), state.x, state.v, e/e0 - 1.);
+      
+    }
+    
     fclose(output);
     
   }
@@ -75,7 +85,9 @@ struct vector cromer(struct vector old, double dt, double omega2){    //Eulero-C
   
   new.v = old.v - omega2 * old.x * dt;
   new.x = old.x + new.v * dt;
-  
+
+  printf("%.10lf\n", new.x);
+
   return new;
   
 }

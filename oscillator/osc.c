@@ -26,8 +26,10 @@ int main(int argc, char *argv[]){
 
   input = fopen("input.dat", "r");
 
-  
-  
+  for(i=0;i<2;i++){
+  fscanf(input, "%lf %lf %lf %lf %lf", &x, &v, &omega2, &dt, &tmax);
+  printf("%lf %lf %lf %lf %lf\n", x, v, omega2, dt, tmax);
+  }
   fclose(input);
   
   exit(0);

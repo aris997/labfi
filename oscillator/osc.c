@@ -20,8 +20,9 @@ int main(int argc, char *argv[]){
   
   long int steps;
   int i, j, k;
-  double x, v, omega2, dt, tmax, e, e0;
-
+  double omega2, dt, tmax, e, e0;
+  struct vector state;
+  
   char filename[50];
   
   FILE *input;
@@ -32,9 +33,19 @@ int main(int argc, char *argv[]){
 
   input = fopen("input.dat", "r");
 
-  for(i=0;i<2;i++){
-    fscanf(input, "%lf %lf %lf %lf %lf", &x, &v, &omega2, &dt, &tmax);
-    printf("%lf %lf %lf %lf %lf\n", x, v, omega2, dt, tmax);
+  for(i=0;i<2;i++){ // i < numero di righe di stati iniziali
+    
+    fscanf(input, "%lf %lf %lf %lf %lf", &state.x, &state.v, &omega2, &dt, &tmax);
+
+    steps = (long int)tmax/dt;
+
+    printf("%.10lf %.10lf %.10lf %.10lf %.10lf %ld\n", state.x, state.v, omega2, dt, tmax, steps);
+
+    sprintf(filename, "output%.0lf.dat", state.x);
+
+    output = fopen(filename, "w");
+    fclose(output);
+    
   }
 
   fclose(input);

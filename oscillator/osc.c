@@ -50,7 +50,7 @@ int main(int argc, char *argv[]){
       state = cromer(state, dt, omega2);
       e = energy(state, omega2);
 
-      fprintf(output, "\t\t%.10lf\t %.10lf\t %.10lf\t %.10lf\n", dt*(i+1), state.x, state.v, e/e0 - 1.);
+      fprintf(output, "\t\t%.10lf\t %.10lf\t %.10lf\t %.10lf\n", dt*(j+1), state.x, state.v, e/e0 - 1.);
       
     }
     

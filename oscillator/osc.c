@@ -5,13 +5,19 @@
 //RODARI RIVA
 //28 settembre 2017   -   v.1.0.1
 
+struct vector{
+  double x;
+  double v;
+};
 
-void eulero(double *x, double *v, double dt, double omega2);
-void cromer(double *x, double *v, double dt, double omega2);
-double energy(double x, double v, double omega2);
+struct vector eulero(struct vector, double, double);
+struct vector cromer(struct vector, double, double);
+double energy(struct vector, double);
 
 int main(int argc, char *argv[]){
 
+  // DICHIARAZIONE VARIABILI
+  
   long int steps;
   int i, j, k;
   double x, v, omega2, dt, tmax, e, e0;
@@ -27,49 +33,46 @@ int main(int argc, char *argv[]){
   input = fopen("input.dat", "r");
 
   for(i=0;i<2;i++){
-  fscanf(input, "%lf %lf %lf %lf %lf", &x, &v, &omega2, &dt, &tmax);
-  printf("%lf %lf %lf %lf %lf\n", x, v, omega2, dt, tmax);
+    fscanf(input, "%lf %lf %lf %lf %lf", &x, &v, &omega2, &dt, &tmax);
+    printf("%lf %lf %lf %lf %lf\n", x, v, omega2, dt, tmax);
   }
+
   fclose(input);
   
   exit(0);
 }
 
 
-//Implementazione Algoritmi di Integrazione
+// Implementazione Algoritmi di Integrazione
 
-void eulero(double *x, double *v, double dt, double omega2){    //Eulero
+struct vector eulero(struct vector old, double dt, double omega2){    //Eulero
   
-  double xnew, vnew;      //Definisco variabili temporali
+  struct vector new;
   
-  xnew = (*x) + (*v) * dt;
-  vnew = (*v) - omega2*(*x)*dt;
+  new.x = old.x + old.v * dt;
+  new.v = old.v - omega2 * old.x *dt;
 
-  *x = xnew;            //Assegno tramite puntatori i nuovi valori
-  *v = vnew;
+  return new;
   
-  return;
 }
 
 
 
-void cromer(double *x, double *v, double dt, double omega2){    //Eulero-Cromer
-  
-  double xnew, vnew;    //Definisco variabili temporali
-  
-  vnew = (*v) - omega2*(*x)*dt;
-  xnew = (*x) + vnew * dt;
+struct vector cromer(struct vector old, double dt, double omega2){    //Eulero-Cromer
 
-  *x = xnew;            //Assegno tramite puntatori i nuovi valori
-  *v = vnew;
+  struct vector new;
   
-  return;
+  new.v = old.v - omega2 * old.x * dt;
+  new.x = old.x + new.v * dt;
+  
+  return new;
+  
 }
 
 
 
-double energy(double x, double v, double omega2) {            //Funzione Energia Meccanica
+double energy(struct vector phase, double omega2) {            //Funzione Energia Meccanica
 
-  return 0.5*v*v + 0.5*omega2*x*x;
+  return 0.5*phase.v*phase.v + 0.5*omega2*phase.x*phase.x;
 
 }

@@ -3,7 +3,7 @@
 #include <math.h>
 
 //RODARI RIVA
-//5 ottobre 2017   -   v.0.1.0
+//5 ottobre 2017   -   v.0.1.1
 
 struct vector{
   double a;
@@ -47,14 +47,14 @@ int main(int argc, char *argv[]){
 	  	sprintf(filename, "p_euler%d.dat", j+1);
 	    output = fopen(filename, "w");          
 
-	    fprintf(output, "# Structure: t,\t a_calc,\t va_calc,\t E(t)/E0 - 1\n");
-	    fprintf(output, "\t\t%lf\t %lf\t %lf\t %lf\n", 0., state.a, state.va, 0.);    
+	    fprintf(output, "#t, a_i, va_i, E(t)/E0 - 1\n");
+	    fprintf(output, "%lf %lf %lf %lf\n", 0., state.a, state.va, 0.);    
 	 
 	    for (i=0; i<steps; i++){
 	      phi = acceleration(state, omega2, gamma, f0, omegaf, dt * (i+1));
 	      state = euler(state, dt, phi);
 	      e = energy(state, omega2);
-	      fprintf(output, "\t\t%lf\t %lf\t %lf\t %lf\n", dt*(i+1), state.a, state.va, e/e0 - 1.);
+	      fprintf(output, "%lf %lf %lf %lf\n", dt*(i+1), state.a, state.va, e/e0 - 1.);
 	    }
 	    fclose(output);
 	  }
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]){
 	  	sprintf(filename, "p_cromer%d.dat", j+1);
 	    output = fopen(filename, "w");
 
-	    fprintf(output, "#t,\t a_calc,\t va_calc,\t E(t)/E0 - 1\n");
+	    fprintf(output, "#t, a_i, va_i, E(t)/E0 - 1\n");
 	    fprintf(output, "%lf %lf %lf %lf\n", 0., state.a, state.va, 0.);    
 	 
 	    for (i=0; i<steps; i++){

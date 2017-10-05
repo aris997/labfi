@@ -30,8 +30,9 @@ int main(int argc, char *argv[]){
   FILE *order;
 
   input = fopen("input.dat", "r");
-
-  for(i=0;i<2;i++){ // i < numero di righe di stati iniziali
+  order = fopen("energy.dat", "w");
+  
+  for(i=0;i<5;i++){ // i < numero di righe di stati iniziali
     
     fscanf(input, "%lf %lf %lf %lf %lf", &state.x, &state.v, &omega2, &dt, &tmax);
 
@@ -43,8 +44,6 @@ int main(int argc, char *argv[]){
     sprintf(filename, "cromer%d.dat", i); // Da' un nome al file di output e lo apre in scrittura
     output = fopen(filename, "w");
 
-    order = fopen("energy.dat", "w");
-    
     fprintf(output, "# Structure: t,\t x_calc,\t v_calc,\t E(t)/E0 - 1\n");
     fprintf(output, "\t\t%.10lf\t %.10lf\t %.10lf\t %.10lf\n", 0., state.x, state.v, 0.);
     
@@ -55,7 +54,7 @@ int main(int argc, char *argv[]){
       e = energy(state, omega2);
 
       if (dt*(j+1) == 2.5){
-	fprintf(order, "%lf %.5lf", dt, e/e0 - 1.);
+	fprintf(order, "%lf %.5lf\n", dt, e/e0 - 1.);
       }
       
       fprintf(output, "\t\t%.10lf\t %.10lf\t %.10lf\t %.10lf\n", dt*(j+1), state.x, state.v, e/e0 - 1.);
@@ -66,7 +65,7 @@ int main(int argc, char *argv[]){
     
   }
 
-  fclose(energy);
+  fclose(order);
   fclose(input);
   
   exit(0);

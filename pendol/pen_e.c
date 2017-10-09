@@ -12,18 +12,23 @@ struct vector{
 };
 
 struct vector cromer(struct vector, double, double);
+struct vector copy(struct vector, double);
 
-double energy(struct vector, double);
+
 double acceleration(struct vector, double, double, double, double, double);
+double period(struct vector, struct vector, double);
+double energy(struct vector, double);
 
-int main() {
+
+int main(int argc, char *argv[]) {
 
 	int k;
-	double omega2, gamma, f0, omegaf, dt, tmax, e, e0, phi;
+	double omega2, gamma, f0, omegaf, dt, tmax, e, e0, phi, T;
 	long int i, steps;
 	char filename[20];
 
 	struct vector state;
+	struct vector last;
 
 	FILE *input;
 	FILE *output;
@@ -46,10 +51,20 @@ int main() {
 	  fprintf(output, "%lf %lf %lf %lf\n", 0., state.a, state.va, 0.);
 
 	  for (i=0; i<steps; i++) {
+	  	
 	  	phi = acceleration(state, omega2, gamma, f0, omegaf, dt * (i+1));
+	  	last = copy(state, dt * (i+1));
+	  	
 	  	state = cromer(state, dt, phi);
 	  	e = energy(state, omega2);
-	  	fprintf(output, "%lf %lf %lf %lf\n", dt*(i+1), state.a, state.va, e/e0 - 1.);
+	  	
+	  	fprintf(output, "%lf %lf %lf %lf", dt*(i+1), state.a, state.va, e/e0 - 1.);
+	  	
+	  	if ( last.a-state.a < 0 ) {
+	  		T = period(last, state, dt);
+	  		fprintf(output, " %lf", T);
+	  	}
+	  	fprintf(output, "\n");
 	  }
 
 }
@@ -70,13 +85,33 @@ struct vector cromer(struct vector old, double dt, double phi) {
   
 }
 
+
 double energy(struct vector state, double omega2) {
 
-  return 0.5 * state.va * state.va + omega2 * (1 - cos(state.a));
+	return 0.5 * state.va * state.va + omega2 * (1 - cos(state.a));
 }
+
 
 double acceleration(struct vector state, double omega2, double gamma, double f0, double omegaf, double t) {
 
   return - omega2 * sin(state.a) - gamma * state.va + f0 * cos(omegaf * t);
   
+}
+
+
+double period(struct vector old, struct vector new, double dt) {
+
+		return old.t + old.a * old.t * (old.a - new.a) / dt;
+}
+
+
+struct vector copy(struct vector state, double t) {
+	
+	struct vector new;
+
+	new.a = state.a;
+	new.va = state.va;
+	new.t = t;
+
+	return new;
 }

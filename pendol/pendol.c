@@ -3,18 +3,14 @@
 #include <math.h>
 
 //RODARI RIVA
-//5 ottobre 2017   -   v.0.1.1
+//5 ottobre 2017   -   v.0.2.0
 
 struct vector{
   double a;
   double va;
+  double t;
 };
 
-struct  vectort{
-	double a;
-	double va;
-	double t;
-}
 
 struct vector euler(struct vector, double, double);
 struct vector cromer(struct vector, double, double);
@@ -28,10 +24,9 @@ int main(int argc, char *argv[]){
   
   int choice = 2, j;
   long int i, steps;                                             
-  double omega2, gamma, f0, omegaf, dt, tmax, e, e0, phi, period;
+  double omega2, gamma, f0, omegaf, dt, tmax, e, e0, phi, T;
   
-  struct vector state;
-  struct vector stateold;
+  struct vector state, older;
   
   FILE *input;
   FILE *output;
@@ -78,11 +73,11 @@ int main(int argc, char *argv[]){
 	 
 	    for (i=0; i<steps; i++) {
 	      phi = acceleration(state, omega2, gamma, f0, omegaf, dt * (i+1));
-	      stateold = older(state, dt * (i+1));
+	      old = older(state, dt * (i+1));
 	      state = cromer(state, dt, phi);
-	      period = period(stateold, state, dt);
+	      T = period(stateold, state, dt);
 	      e = energy(state, omega2);
-	      fprintf(output, "%lf %lf %lf\t %lf %lf\n", dt*(i+1), state.a, state.va, e/e0 - 1., period);
+	      fprintf(output, "%lf %lf %lf\t %lf %lf\n", dt*(i+1), state.a, state.va, e/e0 - 1., T);
 	    }
 	  }
 
@@ -141,7 +136,7 @@ struct vectort older(struct vector state, double t) {
 double period(struct vector stateold, struct vector state, double dt) {
 
 	if ( stateold.a - state.a < 0 ) {
-		return stateold.t + stateold.a * staeteold.t * (stateold.a - state.a) / dt;
+		return stateold.t + stateold.a * stateold.t * (stateold.a - state.a) / dt;
 	}
 	else {
 		return 0;

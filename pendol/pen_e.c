@@ -62,7 +62,6 @@ int main(int argc, char *argv[]) {
 	  	
 	  	if ( last.a-state.a < 0 ) {
 	  		T = period(last, state, dt);
-	  		fprintf(output, " %lf", T);
 	  	}
 	  	fprintf(output, "\n");
 	  }

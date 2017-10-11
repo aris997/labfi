@@ -2,8 +2,10 @@
 #include <stdio.h>
 #include <math.h>
 
+#define PI 3.14159265358979323
+
 //Rodari Riva
-//begin 5th october 2017	- v.0.3.0
+//begin 5th october 2017	- v.0.3.2
 
 struct vector{
 	double a;
@@ -14,16 +16,15 @@ struct vector{
 struct vector cromer(struct vector, double, double);
 struct vector copy(struct vector, double);
 
-
 double acceleration(struct vector, double, double, double, double, double);
-double period(struct vector, struct vector, double);
 double energy(struct vector, double);
 
+void period(struct vector, struct vector, double);
 
 int main(int argc, char *argv[]) {
 
 	int k;
-	double omega2, gamma, f0, omegaf, dt, tmax, e, e0, phi, T;
+	double omega2, gamma, f0, omegaf, dt, tmax, e, e0, phi;
 	long int i, steps;
 	char filename[20];
 
@@ -36,7 +37,7 @@ int main(int argc, char *argv[]) {
 	input = fopen("input.dat", "r");
 	printf("Cromer\n");
 
-	for (k=0; k<1; k++) {
+	for (k=0; k<2; k++) {
 
 	  fscanf(input, "%lf %lf %lf %lf %lf %lf %lf %lf", &state.a, &state.va, &omega2, &dt, &tmax, &gamma, &f0, &omegaf);
 
@@ -50,25 +51,24 @@ int main(int argc, char *argv[]) {
 	  fprintf(output, "#t, \ta_i, \tva_i, \tE(t)/E0 - 1\n");
 	  fprintf(output, "%lf %lf %lf %lf\n", 0., state.a, state.va, 0.);
 
+
 	  for (i=0; i<steps; i++) {
-	  	
+
+	  	last = copy(state, dt * i);
+
 	  	phi = acceleration(state, omega2, gamma, f0, omegaf, dt * (i+1));
-	  	last = copy(state, dt * (i+1));
-	  	
 	  	state = cromer(state, dt, phi);
+	  	
 	  	e = energy(state, omega2);
 	  	
-	  	fprintf(output, "%lf %lf %lf %lf", dt*(i+1), state.a, state.va, e/e0 - 1.);
+	  	fprintf(output, "%lf %lf %lf %lf\n", dt*(i+1), state.a, state.va, e/e0 - 1.);
 	  	
-	  	if ( last.a-state.a < 0 ) {
-	  		T = period(last, state, dt);
-	  	}
-	  	fprintf(output, "\n");
+	  	period(last, state, omega2);
 	  }
 
-}
+	  fclose(output);
+	}
 	fclose(input);
-	fclose(output);
 
 	exit(0);
 }
@@ -98,9 +98,25 @@ double acceleration(struct vector state, double omega2, double gamma, double f0,
 }
 
 
-double period(struct vector old, struct vector new, double dt) {
+void period(struct vector old, struct vector new, double omega2) {
 
-		return old.t + old.a * old.t * (old.a - new.a) / dt;
+	double T, Ta;
+
+	Ta = 2*PI/sqrt(omega2);
+
+	if (old.a + new.a < 0 ) {
+  		
+  		T = old.t + old.a * (old.t - new.t) / (new.a - old.a);
+
+  		printf("%lf %lf %lf %lf %.10lf %.10lf\n", old.a, new.a, new.t, old.t, T, T/Ta - 1);
+  		
+  		if (T/Ta - 1 > 0.1 ) {
+
+  			printf("STOP: errore del periodo sopra il 10%% %lf \n", T/Ta - 1);
+  			exit(0);
+
+  		}
+  	}
 }
 
 

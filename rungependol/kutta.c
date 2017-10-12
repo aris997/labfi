@@ -134,7 +134,7 @@ struct vector RK2(vector old, par var, counter step) {
 struct vector RK4(vector n, par var, counter step) {
 
   double X[5], V[5]; //definisco array di 5 celle solo per avere una corrispondenza con la teoria
-  double t dt;
+  double t, dt;
 
   dt = var.dt;
   t = (double)var.dt*step;
@@ -149,7 +149,7 @@ struct vector RK4(vector n, par var, counter step) {
   V[4] = phi(n.x + X[3], n.v + V[3], var, t + dt) * dt;
 
   n.x += (X[1] + 2 * X[2] + 2 * X[3] + X[4])/6;
-  n.v += (V[1] + 2 * V[2] + 2 ] V[3] + V[4])/6;
+  n.v += (V[1] + 2 * V[2] + 2 * V[3] + V[4])/6;
   
   return n;
 }

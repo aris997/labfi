@@ -56,7 +56,8 @@ int main(int argc, char *argv[]) {
   	else if (atof(argv[2]) == 2) selection = 2;
   	else selection = 4;
   }
-  else printf("too many arguments\n");
+  else if (argc > 2) printf("too many arguments\n");
+  else selection = 4;
 
 
   char filename[20];
@@ -98,7 +99,13 @@ int main(int argc, char *argv[]) {
     fclose(output);
   }
 
+  // GNUPLOT implementation
+  FILE *gnuplotPipe = popen("gnuplot -persistent", "w");
+
+  char *commandsForGNUPLOT[] = {"set term x11 0", "plot 'data.dat' u 1:2 w l"};
+
   fclose(input);
+  fclose(gnuplotPipe);
   exit(0);
 }
 

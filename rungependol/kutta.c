@@ -31,11 +31,9 @@ struct vector RK4(vector, par, counter);
 double phi(double, double, par, double);
 double energy(vector, par);
 
-int main(){
+int main(int argc, char *argv[]) {
 
-	printf("Default settings use RK4 to integrate\n");
-  
-  int j, selection = 4;
+  int j, selection;
   counter i, steps;
   double x0, v0, tmax, e, e0;
 
@@ -48,9 +46,20 @@ int main(){
   // FILE *poincare;
   // FILE *accumul;
   // FILE *biforc;
-  
-  char filename[20];
 
+
+	printf("Default settings use RK4 to integrate\n");
+  
+  if (argc == 2) {	 // selection value (0) verlet, (1) velocity verlet, (2) RK2, (4) RK4
+  	if (atof(argv[2]) == 0) selection = 0;
+  	else if (atof(argv[2]) == 1) selection = 1;
+  	else if (atof(argv[2]) == 2) selection = 2;
+  	else selection = 4;
+  }
+  else printf("too many arguments\n");
+
+
+  char filename[20];
   input = fopen("input.dat", "r");
 
   for(j=0; j<NINPUT; j++) {
@@ -77,6 +86,7 @@ int main(){
     else if (selection == 2) algorithm = &RK2;
     else if (selection == 4) algorithm = &RK4;
     else exit(EXIT_FAILURE);
+
 
     for (i=0; i<steps; i++) {
 

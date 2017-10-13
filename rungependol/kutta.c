@@ -24,7 +24,7 @@ typedef struct par{
 typedef long int counter;
 
 struct vector verlet(vector, par, counter);
-struct vector velocityverlet(vector, par);
+struct vector velocityverlet(vector, par, counter); //per simmetria di codice passo counter anche se a v.v. non serve
 struct vector RK2(vector, par, counter);
 struct vector RK4(vector, par, counter);
 
@@ -33,10 +33,12 @@ double energy(vector, par);
 
 int main(){
 
-  int j;
+	printf("Default settings use RK4 to integrate\n");
+  
+  int j, selection = 4;
   counter i, steps;
   double x0, v0, tmax, e, e0;
-  
+
   vector state;  //creo una struct per state(x,v) e var per parametri
   par var;
 
@@ -51,7 +53,7 @@ int main(){
 
   input = fopen("input.dat", "r");
 
-  for(j=0; j<NINPUT; j++){
+  for(j=0; j<NINPUT; j++) {
 
     fscanf(input, "%lf %lf %lf %lf %lf %lf %lf %lf", &x0, &v0, &var.omega2, &var.gamma, &var.f0, &var.omegaf, &var.dt, &tmax);
     
@@ -65,23 +67,25 @@ int main(){
     sprintf(filename, "data.dat");  //E' possibile resettare un char richiamandolo in una funzione sprintf
     output = fopen(filename, "w");
 
-    fprintf(output, "%.14lf %.14lf %.14lf %.14lf\n", 0., state.x, state.v, 0.);
 
-    for(i = 0; i<steps; i++){
+    fprintf(output, "%.8lf %.16lf %.16lf %.24lf\n", 0., state.x, state.v, 0.);
 
-      //state = verlet(state, var, i);
-      //state = velocityverlet(state, var);
-      //state = RK2(state, var, i);
-      state = RK4(state, var, i);
+	  vector (*algorithm)(vector, par, counter);
 
+         if (selection == 0) algorithm = &verlet;
+    else if (selection == 1) algorithm = &velocityverlet;
+    else if (selection == 2) algorithm = &RK2;
+    else if (selection == 4) algorithm = &RK4;
+    else exit(EXIT_FAILURE);
+
+    for (i=0; i<steps; i++) {
+
+      state = algorithm(state, var, i);
       e = energy(state, var);
-
-      fprintf(output, "%.14lf %.14lf %.14lf %.14lf\n", var.dt * (i + 1), state.x, state.v, e/e0 - 1.);
-      
+      fprintf(output, "%.8lf %.16lf %.16lf %.24lf\n", var.dt * (i + 1), state.x, state.v, e/e0 - 1.);      
     }
     
     fclose(output);
-
   }
 
   fclose(input);
@@ -95,9 +99,10 @@ struct vector verlet(vector old, par var, counter step) {
   struct vector new;
   static double nextx;
   
-  if(step == 0){
-    new.x = old.x + old.v * var.dt - 0.5 * var.omega2 * sin(old.x) * var.dt * var.dt; //x1
+  if(step == 0) {
+  	new.x = old.x + old.v * var.dt - 0.5 * var.omega2 * sin(old.x) * var.dt * var.dt; //x1
   }
+  
   else {
     new.x = nextx;
   }
@@ -106,10 +111,10 @@ struct vector verlet(vector old, par var, counter step) {
   new.v = 0.5 * (nextx - old.x)/var.dt; //v1
 
   return new;
-
 }
 
-struct vector velocityverlet(vector old, par var) {
+
+struct vector velocityverlet(vector old, par var, counter step) {
 
   struct vector new;
 
@@ -118,6 +123,7 @@ struct vector velocityverlet(vector old, par var) {
 
   return new;
 }
+
 
 struct vector RK2(vector old, par var, counter step) {
 
@@ -131,6 +137,7 @@ struct vector RK2(vector old, par var, counter step) {
   return new;
 }
 
+
 struct vector RK4(vector n, par var, counter step) {
 
   double X[5], V[5]; //definisco array di 5 celle solo per avere una corrispondenza con la teoria
@@ -141,23 +148,25 @@ struct vector RK4(vector n, par var, counter step) {
 
   X[1] = n.v * dt;
   V[1] = phi(n.x, n.v, var, t) * dt;
-  X[2] = (n.v + V[1]/2) * dt;
-  V[2] = phi(n.x + X[1]/2, n.v + V[1]/2, var, t + dt/2) * dt;
-  X[3] = (n.v + V[2]/2) * dt;
-  V[3] = phi(n.x + X[2]/2, n.v + V[2]/2, var, t + dt/2) * dt;
+  X[2] = (n.v + V[1]/2.) * dt;
+  V[2] = phi(n.x + X[1]/2., n.v + V[1]/2., var, t + dt/2.) * dt;
+  X[3] = (n.v + V[2]/2.) * dt;
+  V[3] = phi(n.x + X[2]/2., n.v + V[2]/2., var, t + dt/2.) * dt;
   X[4] = (n.v + V[3]) * dt;
   V[4] = phi(n.x + X[3], n.v + V[3], var, t + dt) * dt;
 
-  n.x += (X[1] + 2 * X[2] + 2 * X[3] + X[4])/6;
-  n.v += (V[1] + 2 * V[2] + 2 * V[3] + V[4])/6;
+  n.x += (X[1] + 2. * X[2] + 2. * X[3] + X[4])/6.;
+  n.v += (V[1] + 2. * V[2] + 2. * V[3] + V[4])/6.;
   
   return n;
 }
+
 
 double phi(double x, double v, par var, double t) {
 
   return -var.omega2 * sin(x) -var.gamma * v + var.f0 * cos(var.omegaf * t);
 }
+
 
 double energy(vector state, par var) {
 

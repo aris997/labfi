@@ -100,12 +100,12 @@ int main(int argc, char *argv[]) {
   }
 
   // GNUPLOT implementation
-  FILE *gnuplotPipe = popen("gnuplot -persistent", "w");
+  char *StringheGNUPLOT[] = {"gnuplot", "plot 'data.dat' u 1:2 w l", "plot 'data.dat' u 2:3 w l", "plot 'data.dat' u 1:4 w l"};
+  
+  system(*StringheGNUPLOT);  
 
-  char *commandsForGNUPLOT[] = {"set term x11 0", "plot 'data.dat' u 1:2 w l"};
 
   fclose(input);
-  fclose(gnuplotPipe);
   exit(0);
 }
 

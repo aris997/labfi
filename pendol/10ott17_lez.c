@@ -1,3 +1,0 @@
-
-
-//diagramma di biforcazione

@@ -1,0 +1,1 @@
+set persistsplot 'planes.dat' every ::2000:: w p lt rgb 'red'

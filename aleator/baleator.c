@@ -19,12 +19,26 @@ typedef struct dim{
 
 
 int main () {
-  number m = 2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2ULL;
+  register int i;
+
+  unsigned char m[64] = {0};
+  for (i=0; i<64; i++) m[i]=1ULL;
+
+  //number m = pow(2,64)-1;
   //number m = (number)(pow(2,64)-1);
   number a = 1181783497276652981ULL;
 
-  printf("m:%lld \na:%lld\n", m, a);
+  double ran, r;
 
+  double inv = 1./((double)m);
+  printf("%.52lf \n", inv);
+/*
+  for (i=0; i<pow(10,6); i++){
+    ran *= (double)a;
+    r = (double)ran*inv;
+    if (r<0.5) printf("0 ");
+    else printf("1 ");
+  }*/
 
   exit(0);
 }

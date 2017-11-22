@@ -21,24 +21,26 @@ typedef struct dim{
 int main () {
   register int i;
 
-  unsigned char m[64] = {0};
-  for (i=0; i<64; i++) m[i]=1ULL;
-
-  //number m = pow(2,64)-1;
-  //number m = (number)(pow(2,64)-1);
+  number m = (1<<(8*sizeof(number)))-1;
   number a = 1181783497276652981ULL;
 
-  double ran, r;
+  number ran = time(NULL);
+  double r;
+  double inv = 1./(double)m;
 
-  double inv = 1./((double)m);
-  printf("%.52lf \n", inv);
-/*
-  for (i=0; i<pow(10,6); i++){
-    ran *= (double)a;
+  number mem;
+
+  //printf("%llu %ld %.52lf\n", m, 8*sizeof(number), inv);
+  //printf("%.52lf\n", inv);
+
+  for (i=0; i<pow(10,POW); i++){
+    ran = (a*ran)%m;
     r = (double)ran*inv;
-    if (r<0.5) printf("0 ");
-    else printf("1 ");
-  }*/
+    if (r<0.5) mem++;
+  }
+
+  double M = mem/pow(10,POW);
+  printf("media %lf\n", M);
 
   exit(0);
 }

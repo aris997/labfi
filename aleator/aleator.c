@@ -4,9 +4,9 @@
 #include <math.h>
 #include <time.h>
 
-#define NSTORIES 10000
-#define NSTEPS 10000
-#define NBIN 25
+#define NSTORIES 1000
+#define NSTEPS 1000
+#define NBIN 10
 
 typedef unsigned long long int number;
 typedef long long int pos;
